@@ -30,12 +30,12 @@ create table tournament_stages (
 
 create table teams (
 	team_id int primary key,
-	team_name nvarchar(100) not null,
-	fifa_code_name nvarchar(100) not null,
+	team_name nvarchar(100) not null unique,
+	fifa_code_name nvarchar(100) not null unique,
 	groupp nvarchar(10) not null,
 	confederation nvarchar(100) not null,
-	fifa_ranking_per_tournament int,
-	elo_rating float,
+	fifa_ranking_per_tournament int check (fifa_ranking_per_tournament > 0),
+	elo_rating float check (elo_rating > 0),
 	coach_name nvarchar(100)
 )
 
@@ -73,10 +73,11 @@ create table player_tournament_statistics (
     clean_sheets float default 0,
     saves float default 0.0,
     avg_rating float,
-    shirt_number int, 
+    shirt_number int check (shirt_number between 1 and 99), 
 
     foreign key (player_id) references player_squads(player_id),
-    foreign key (team_id) references teams(team_id)
+    foreign key (team_id) references teams(team_id),
+    constraint uq_pts_team_shirt unique(team_id, shirt_number)
 );
 
 create table matches (
@@ -101,7 +102,9 @@ create table matches (
     foreign key (home_team_id) references teams(team_id),
     foreign key (away_team_id) references teams(team_id),
     foreign key (referee_id) references referees(referee_id),
-    foreign key (player_of_the_match_id) references player_squads(player_id)
+    foreign key (player_of_the_match_id) references player_squads(player_id),
+
+    constraint uq_stage_teams unique(stage_id, home_team_id, away_team_id)
 );
 
 create table matches_detailed (
@@ -175,7 +178,7 @@ go
 
 -- INSERT DU LIEU
 bulk insert referees
-from 'D:\Prj_WC26_MANAGEMENT\datasets\referees.csv' 
+from 'D:\wc26_management\datasets\referees.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -185,7 +188,7 @@ with (
 );
 
 bulk insert stadiums
-from 'D:\Prj_WC26_MANAGEMENT\datasets\stadiums.csv' 
+from 'D:\wc26_management\datasets\stadiums.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -195,7 +198,7 @@ with (
 );
 
 bulk insert tournament_stages
-from 'D:\Prj_WC26_MANAGEMENT\datasets\tournament_stages.csv' 
+from 'D:\wc26_management\datasets\tournament_stages.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -205,7 +208,7 @@ with (
 );
 
 bulk insert teams
-from 'D:\Prj_WC26_MANAGEMENT\datasets\teams.csv' 
+from 'D:\wc26_management\datasets\teams.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -215,7 +218,7 @@ with (
 );
 
 bulk insert player_squads
-from 'D:\Prj_WC26_MANAGEMENT\datasets\player_squads.csv' 
+from 'D:\wc26_management\datasets\player_squads.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -225,7 +228,7 @@ with (
 );
 
 bulk insert player_tournament_statistics
-from 'D:\Prj_WC26_MANAGEMENT\datasets\player_tournament_statistics.csv' 
+from 'D:\wc26_management\datasets\player_tournament_statistics.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -236,7 +239,7 @@ with (
 );
 
 bulk insert matches
-from 'D:\Prj_WC26_MANAGEMENT\datasets\matches.csv' 
+from 'D:\wc26_management\datasets\matches.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -246,7 +249,7 @@ with (
 );
 
 bulk insert matches_detailed
-from 'D:\Prj_WC26_MANAGEMENT\datasets\matches_detailed.csv' 
+from 'D:\wc26_management\datasets\matches_detailed.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -256,7 +259,7 @@ with (
 );
 
 bulk insert match_events
-from 'D:\Prj_WC26_MANAGEMENT\datasets\match_events.csv' 
+from 'D:\wc26_management\datasets\match_events.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -266,7 +269,7 @@ with (
 );
 
 bulk insert match_team_lineups
-from 'D:\Prj_WC26_MANAGEMENT\datasets\match_team_lineups.csv' 
+from 'D:\wc26_management\datasets\match_team_lineups.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -276,7 +279,7 @@ with (
 );
 
 bulk insert match_team_statistics
-from 'D:\Prj_WC26_MANAGEMENT\datasets\match_team_statistics.csv' 
+from 'D:\wc26_management\datasets\match_team_statistics.csv' 
 with (
     format = 'CSV',
     firstrow = 2,           
@@ -299,28 +302,30 @@ select * from match_events
 select * from match_team_lineups
 select * from match_team_statistics
 
---drop table referees
---drop table stadiums
---drop table tournament_stages
---drop table teams
---drop table player_squads
---drop table player_tournament_statistics
---drop table matches_detailed
---drop table match_events
---drop table match_team_lineups
---drop table match_team_statistics
---drop table matches
+drop table matches_detailed
+drop table match_events
+drop table match_team_lineups
+drop table match_team_statistics
+drop table matches
+drop table referees
+drop table stadiums
+drop table tournament_stages
+drop table player_tournament_statistics
+drop table player_squads
+drop table teams
+go
 
---delete referees
---delete stadiums
---delete tournament_stages
---delete teams
---delete player_squads
---delete player_tournament_statistics
---delete matches_detailed
---delete match_events
---delete match_team_lineups
---delete match_team_statistics
---delete matches
+delete matches_detailed
+delete match_events
+delete match_team_lineups
+delete match_team_statistics
+delete matches
+delete referees
+delete stadiums
+delete tournament_stages
+delete player_squads
+delete player_tournament_statistics
+delete teams
+go
 
 

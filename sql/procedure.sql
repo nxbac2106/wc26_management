@@ -9,8 +9,8 @@ go
 
 
 /* PROCEDURE1: TRA CUU LICH THI DAU - KET QUA TRAN DAU THEO VONG DAU */
---drop procedure sp_get_matches_stage
---go
+drop procedure sp_get_matches_stage
+go
 create procedure sp_get_matches_stage 
     @stage_name nvarchar(50), 
     @group nvarchar(50) = null
@@ -52,8 +52,8 @@ go
 
 /* PROCEDURE2: THEM DU LIEU*/
 /* 2.1: THEM DOI TUYEN*/
---drop procedure sp_add_team
---go
+drop procedure sp_add_team
+go
 create procedure sp_add_team
     @team_id int = null,
     @team_name nvarchar(100),
@@ -109,8 +109,8 @@ go
 
 
 /* 2.2: THEM CAU THU VAO DOI TUYEN */
---drop procedure sp_add_player
---go
+drop procedure sp_add_player
+go
 create procedure sp_add_player
     @player_id int = null,
     --@team_id int,
@@ -189,8 +189,8 @@ end
 go
 
 /* 2.3: THEM TRAN DAU */
---drop procedure sp_add_match
---go
+drop procedure sp_add_match
+go
 create or alter procedure sp_add_match
     @match_id int = null,
     @datee date,
@@ -282,6 +282,8 @@ go
 
 /* PROCEDURE3: CAP NHAT DU LIEU*/
 /* 3.1: CAP NHAT TEAM */
+drop procedure sp_update_team
+go
 create procedure sp_update_team
     @team_id int,
     @groupp nvarchar(10),
@@ -322,6 +324,8 @@ go
 
 
 /* 3.2: CAP NHAT PLAYER */
+drop procedure sp_update_player
+go
 create procedure sp_update_player
     @player_id int,
     @position nvarchar(100),
@@ -382,6 +386,8 @@ go
 
 
 /* 3.3: CAP NHAT MATCH */
+drop procedure sp_update_match
+go
 create procedure sp_update_match
     @match_id int,
     @statuss nvarchar(100),
@@ -430,8 +436,8 @@ go
 
 /* PROCEDURE4: XOA DU LIEU*/
 /* 4.1: XOA PLAYER */
--- drop procedure sp_delete_player
--- go
+drop procedure sp_delete_player
+go
 create procedure sp_delete_player
     @player_id int,
     @force bit = 0
@@ -486,8 +492,8 @@ go
 
 
 /* 4.2: XOA TEAM (xoa ca cac Player trong Team) */
---drop procedure sp_delete_team
---go
+drop procedure sp_delete_team
+go
 create procedure sp_delete_team
     @team_id int,
     @force bit = 0
@@ -567,8 +573,8 @@ go
 
 
 /* 4.3: XOA MATCH */
---drop procedure sp_delete_match
---go
+drop procedure sp_delete_match
+go
 create procedure sp_delete_match
     @match_id int,
     @force bit = 0
@@ -624,16 +630,23 @@ go
 
 
 -- TEST --
+delete from player_tournament_statistics where player_id > 1248
+delete from player_squads where player_id > 1248
+delete from matches where match_id > 104
+delete from teams where team_id > 48
+
+
 exec sp_add_team  @team_name = N'Việt Nam', @fifa_code_name = 'VIE', @groupp = 'A', @confederation = 'AFC'
 exec sp_add_team  @team_name = N'Thailand', @fifa_code_name = 'THA', @groupp = 'A', @confederation = 'AFC'
 exec sp_add_player @team_name = N'Việt Nam', @player_name = N'Nguyễn Quang Hải', @position = 'Goalkeeper', @shirt_number = 19
-exec sp_add_match @datee = '2026-11-11', @kickoff_time_utc = '18:00', @stage_id = 1, @stadium_id = 1, @referee_id = 1, @home_team_id = 51, @away_team_id = 50
+exec sp_add_match @datee = '2026-11-11', @kickoff_time_utc = '18:00', @stage_id = 1, @stadium_id = 1, @referee_id = 1, @home_team_id = 49, @away_team_id = 50
 go
 
 exec sp_update_match @match_id = 105, @statuss = 'Completed', @home_score = 2, @away_score = 1, @result_type = 'FT'
 go
 
-exec sp_delete_player @player_id = 1249, @force = 1   
-exec sp_delete_team   @team_id = 51, @force = 1
-exec sp_delete_match  @match_id = 105, @force = 1
+exec sp_delete_match  @match_id = 105, @force = 1  
+exec sp_delete_player @player_id = 1249, @force = 1
+exec sp_delete_team   @team_id = 49, @force = 1
+exec sp_delete_team   @team_id = 50, @force = 1
 go

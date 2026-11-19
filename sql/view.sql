@@ -3,8 +3,8 @@ go
 
 
 /* VIEW1: THỐNG KÊ KẾT QUẢ CÁC TRẬN ĐẤU: */
---drop view vw_match_results
---go
+drop view vw_match_results
+go
 create view vw_match_results as
 select matches_detailed.datee, matches_detailed.kickoff_time_utc, matches_detailed.stadium_name, stadiums.country, tournament_stages.stage_name, 
 	case when tournament_stages.stage_name = 'Group Stage' then teams.groupp else null end as groupp, 
@@ -22,8 +22,8 @@ go
 
 
 /* VIEW2: BẢNG XẾP HẠNG CÁC ĐỘI Ở VÒNG BẢNG */
---drop view vw_rank_group_stage
---go
+drop view vw_rank_group_stage
+go
 create view vw_rank_group_stage as
 with teams_goals_point as
 (
@@ -62,8 +62,8 @@ go
 
 
 /* VIEW3: TỔNG HỢP THỐNG KÊ CỦA TỪNG ĐỘI TRÊN TOÀN GIẢI */
---drop view vw_tournament_team_stats
---go
+drop view vw_tournament_team_stats
+go
 create view vw_tournament_team_stats as
 with teams_goals_point as
 (
@@ -88,7 +88,7 @@ with teams_goals_point as
     from matches join tournament_stages on matches.stage_id = tournament_stages.stage_id
 ),
 team_statistic as (
-    select teams.team_id, teams.team_name, cast(avg(match_team_statistics.possession_pct) as decimal(4,2)) as avg_possession, 
+    select teams.team_id, teams.team_name, cast(avg(cast(match_team_statistics.possession_pct as decimal(4,2))) as decimal(4,2)) as avg_possession, 
         sum(match_team_statistics.total_shots) as total_shots, sum(match_team_statistics.shots_on_target) as shot_on_target, sum(match_team_statistics.corners) as corners,
         sum(match_team_statistics.fouls) as fouls, sum(match_team_statistics.offsides) as offsides 
     from teams join match_team_statistics on teams.team_id = match_team_statistics.team_id
@@ -110,8 +110,8 @@ go
 
 
 /* VIEW4: THỐNG KÊ CỦA TỪNG CẦU THỦ */
---drop view vw_tournament_player_stats
---go
+drop view vw_tournament_player_stats
+go
 create view vw_tournament_player_stats as
 select player_id, player_name, team_name, groupp, position, matches_played, matches_started, minutes_played, goals, assists, avg_rating
 from player_tournament_statistics 
@@ -121,4 +121,6 @@ go
 select * from vw_tournament_player_stats
 order by avg_rating desc
 go
+
+
 
